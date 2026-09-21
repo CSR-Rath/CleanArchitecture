@@ -19,7 +19,7 @@ public final class UserRemoteDataSource: UserRemoteDataSourceProtocol {
     }
 
     public func fetchUser(id: Int) async throws -> UserDTO {
-        let request = try APIRequestBuilder.makeRequest(path: "/users/\(id)")
+        let request = try APIRequestBuilder.makeRequest(path: .users(id: "\(id)"))
         return try await networkClient.request(request)
     }
 }

@@ -11,12 +11,12 @@ public struct APIRequestBuilder {
     private static let baseURL = "https://jsonplaceholder.typicode.com"
 
     public static func makeRequest(
-        path: String,
-        method: String = "GET",
+        path: APIEndpoint,
+        method: HTTPMethod = .get,
         queryItems: [URLQueryItem]? = nil,
         body: Encodable? = nil
     ) throws -> URLRequest {
-        guard var components = URLComponents(string: baseURL + path) else {
+        guard var components = URLComponents(string: baseURL + path.path) else {
             throw NetworkError.invalidURL
         }
 
@@ -29,7 +29,7 @@ public struct APIRequestBuilder {
         }
 
         var request = URLRequest(url: url)
-        request.httpMethod = method
+        request.httpMethod = method.rawValue
         request.setValue("application/json; charset=UTF-8", forHTTPHeaderField: "Content-Type")
 
         if let body = body {
@@ -39,3 +39,5 @@ public struct APIRequestBuilder {
         return request
     }
 }
+
+
