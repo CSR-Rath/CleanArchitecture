@@ -53,43 +53,5 @@ public final class NetworkClient: NetworkClientProtocol {
             throw error
         }
     }
-
-    // MARK: - Logging Helpers
-
-    private func logRequest(_ request: URLRequest) {
-        let method = request.httpMethod ?? "UNKNOWN"
-        let url = request.url?.absoluteString ?? "Invalid URL"
-
-        logger.info("🚀 [REQUEST] \(method) -> \(url)")
-
-        if let headers = request.allHTTPHeaderFields, !headers.isEmpty {
-            logger.debug("   Headers: \(headers)")
-        }
-
-        if let body = request.httpBody, let formattedBody = prettyPrintJSON(body) {
-            logger.debug("   Body:\n\(formattedBody)")
-        }
-    }
-
-    private func logResponse(_ response: HTTPURLResponse, data: Data) {
-        let statusCode = response.statusCode
-        let url = response.url?.absoluteString ?? "Invalid URL"
-        let symbol = (200...299).contains(statusCode) ? "📥" : "⚠️"
-
-        logger.info("\(symbol) [RESPONSE \(statusCode)] <- \(url)")
-
-        if let formattedJSON = prettyPrintJSON(data) {
-            logger.debug("   Response JSON:\n\(formattedJSON)")
-        }
-    }
-
-    private func prettyPrintJSON(_ data: Data) -> String? {
-        guard let jsonObject = try? JSONSerialization.jsonObject(with: data, options: []),
-              let prettyData = try? JSONSerialization.data(withJSONObject: jsonObject, options: [.prettyPrinted]),
-              let prettyString = String(data: prettyData, encoding: .utf8) else {
-            return String(data: data, encoding: .utf8)
-        }
-        return prettyString
-    }
 }
 
