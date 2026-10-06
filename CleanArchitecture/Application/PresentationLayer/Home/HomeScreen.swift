@@ -19,16 +19,16 @@ public struct HomeScreen: View {
             VStack {
                 if viewModel.isLoading {
                     ProgressView("Loading Feed...")
-                        .accessibilityIdentifier(AccessibilityID.Home.loadingView)
+                        // .accessibilityIdentifier(AccessibilityID.Home.loadingView)
                 } else if let error = viewModel.errorMessage {
                     VStack(spacing: 12) {
                         Text("Error: \(error)")
-                            .accessibilityIdentifier(AccessibilityID.Home.errorText)
+                            // .accessibilityIdentifier(AccessibilityID.Home.errorText)
                             .foregroundColor(.red)
                         Button("Retry") {
                             Task { await viewModel.loadFeed() }
                         }
-                        .accessibilityIdentifier(AccessibilityID.Home.retryButton)
+                        // .accessibilityIdentifier(AccessibilityID.Home.retryButton)
                         .buttonStyle(.borderedProminent)
                     }
                 } else {
@@ -36,13 +36,13 @@ public struct HomeScreen: View {
                         VStack(alignment: .leading, spacing: 6) {
                             Text(item.title)
                                 .font(.headline)
-                                .accessibilityIdentifier(AccessibilityID.Home.postTitle(id: item.id))
+                                // .accessibilityIdentifier(AccessibilityID.Home.postTitle(id: item.id))
                             Text(item.body)
                                 .font(.subheadline)
                                 .foregroundColor(.secondary)
                         }
                     }
-                    .accessibilityIdentifier(AccessibilityID.Home.feedList)
+                    // .accessibilityIdentifier(AccessibilityID.Home.feedList)
                 }
             }
             .navigationTitle("Feed")

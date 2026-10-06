@@ -21,16 +21,16 @@ public struct ProfileScreen: View {
             VStack {
                 if viewModel.isLoading {
                     ProgressView("Loading Profile...")
-                        .accessibilityIdentifier(AccessibilityID.Profile.loadingView)
+                        // .accessibilityIdentifier(AccessibilityID.Profile.loadingView)
                 } else if let error = viewModel.errorMessage {
                     VStack(spacing: 12) {
                         Text("Error: \(error)")
-                            .accessibilityIdentifier(AccessibilityID.Profile.errorText)
+                            // .accessibilityIdentifier(AccessibilityID.Profile.errorText)
                             .foregroundColor(.red)
                         Button("Retry") {
                             Task { await viewModel.loadProfile() }
                         }
-//                        .accessibilityIdentifier(AccessibilityID.Profile.retryButton)
+//                        // .accessibilityIdentifier(AccessibilityID.Profile.retryButton)
 //                        .buttonStyle(.borderedProminent)
                     }
                 } else if let user = viewModel.user {
@@ -39,23 +39,27 @@ public struct ProfileScreen: View {
                         Button("Retry") {
                             isShowSheet = true
                         }
-                        .accessibilityIdentifier(AccessibilityID.Profile.retryButton)
+                        // .accessibilityIdentifier(AccessibilityID.Profile.retryButton)
                         
                         List {
                             Section(header: Text("Details")) {
                                 Text("Name: \(user.name)")
-                                    .accessibilityIdentifier(AccessibilityID.Profile.nameText)
+                                    // .accessibilityIdentifier(AccessibilityID.Profile.nameText)
                                 Text("Email: \(user.email)")
-                                    .accessibilityIdentifier(AccessibilityID.Profile.emailText)
+                                    // .accessibilityIdentifier(AccessibilityID.Profile.emailText)
                             }
                         }
-                        .accessibilityIdentifier(AccessibilityID.Profile.detailsList)
+                        // .accessibilityIdentifier(AccessibilityID.Profile.detailsList)
                     }
                     .sheet(isPresented: $isShowSheet) {
                         Text("data: \(viewModel.user ?? User(id: -1, name: "", email: ""))")
                     }
                 } else {
-                    ContentUnavailableView("No Profile Data", systemImage: "person.slash")
+                    if #available(iOS 17.0, *) {
+                        ContentUnavailableView("No Profile Data", systemImage: "person.slash")
+                    } else {
+                        // Fallback on earlier versions
+                    }
                 }
             }
             .navigationTitle("Profile")

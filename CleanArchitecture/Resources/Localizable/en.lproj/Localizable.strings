@@ -1,0 +1,13 @@
+/* 
+  Localizable.strings
+  CleanArchitecture
+
+  Created by Sophearath.chhan on 10/6/26.
+  
+*/
+
+
+"welcome_title" = "Welcome";
+"profile_subtitle" = "Manage your settings";
+"user_greeting" = "Hello, %@! and  %@!";
+"items_count" = "You have %d items.";
