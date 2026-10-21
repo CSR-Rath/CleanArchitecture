@@ -82,5 +82,3 @@ struct SheetModifier<SheetContent: View>: ViewModifier {
         }
     }
 }
-
-

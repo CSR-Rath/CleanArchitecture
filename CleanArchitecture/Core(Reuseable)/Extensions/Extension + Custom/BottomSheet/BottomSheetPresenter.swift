@@ -14,10 +14,8 @@ struct BottomSheetPresenter<SheetContent: View>: View {
     private let fractions: [CGFloat]
     private let backgoundColor: Color
     private let dismissible: Bool
-
     private let isCloseButtonHidden: Bool
     private let isCapsuleHidden: Bool
-
     private let onDismissCompleted: (() -> Void)?
     private let content: () -> SheetContent
 
@@ -69,9 +67,7 @@ struct BottomSheetPresenter<SheetContent: View>: View {
             content()
         }
 
-        let viewController = UIHostingController(
-            rootView: sheet
-        )
+        let viewController = UIHostingController(rootView: sheet)
 
         viewController.view.backgroundColor = .clear
         viewController.modalPresentationStyle = .overFullScreen

@@ -5,606 +5,193 @@
 //  Created by Sophearath.chhan on 10/6/26.
 //
 
-import SwiftUI
-import UIKit
-import AVFoundation
-import CoreImage
-import PhotosUI
-import Combine
 
-// MARK: - Camera Manager
+import UIKit
+import Combine
+import AVFoundation
 
 final class CameraManager: NSObject, ObservableObject {
 
-    // MARK: Session
+    enum CameraError: LocalizedError {
+        case permissionDenied
+        case configurationFailed
+        case captureFailed
 
+        var errorDescription: String? {
+            switch self {
+            case .permissionDenied:     return "Camera access is denied. Enable it in Settings."
+            case .configurationFailed:  return "Unable to configure the camera."
+            case .captureFailed:        return "Unable to capture the photo."
+            }
+        }
+    }
+
+    // MARK: - Published state (always updated on main)
+    @Published private(set) var isAuthorized = false
+    @Published private(set) var isRunning = false
+    @Published private(set) var position: AVCaptureDevice.Position = .back
+    @Published var flashMode: AVCaptureDevice.FlashMode = .off
+    @Published var error: CameraError?
+
+    // MARK: - Capture objects
     let session = AVCaptureSession()
+    private let photoOutput = AVCapturePhotoOutput()
+    private let sessionQueue = DispatchQueue(label: "camera.session.queue")
+    private var isConfigured = false
+    private var inFlight: [Int64: PhotoDelegate] = [:]   // accessed on sessionQueue only
 
-    // MARK: Outputs
-
-    let photoOutput = AVCapturePhotoOutput()
-    let metadataOutput = AVCaptureMetadataOutput()
-
-    // MARK: Input
-
-    var videoInput: AVCaptureDeviceInput?
-
-    // MARK: State
-
-    @Published var isRunning = false
-    @Published var isConfigured = false
-
-    @Published var isUsingFrontCamera = false
-    @Published var isFlashOn = false
-
-    @Published var zoom: CGFloat = 1.0
-
-    @Published var capturedImage: UIImage?
-    @Published var scannedQRCode: String?
-
-    @Published var cameraPermissionDenied = false
-    
-    
-    deinit{
-        stop()
-    }
-    
-
-    // MARK: Configuration
-
-    func configure() {
-
-        guard !isConfigured else {
-            return
-        }
-
-        guard AVCaptureDevice.authorizationStatus(
-            for: .video
-        ) == .authorized else {
-            requestPermission()
-            return
-        }
-
-        session.beginConfiguration()
-
-        session.sessionPreset = .photo
-
-        setupCameraInput()
-        setupPhotoOutput()
-        setupQRCodeOutput()
-
-        session.commitConfiguration()
-
-        DispatchQueue.main.async {
-            self.isConfigured = true
-        }
-    }
-}
-
-
-// MARK: - Permission
-
-extension CameraManager {
-
-    func requestPermission() {
-
-        switch AVCaptureDevice.authorizationStatus(
-            for: .video
-        ) {
-
+    // MARK: - Permission
+    @discardableResult
+    func requestPermission() async -> Bool {
+        let granted: Bool
+        switch AVCaptureDevice.authorizationStatus(for: .video) {
         case .authorized:
-
-            configure()
-
+            granted = true
         case .notDetermined:
-
-            AVCaptureDevice.requestAccess(
-                for: .video
-            ) { [weak self] granted in
-
-                DispatchQueue.main.async {
-
-                    if granted {
-                        self?.configure()
-                    } else {
-                        self?.cameraPermissionDenied = true
-                    }
-                }
-            }
-
-        case .denied, .restricted:
-
-            cameraPermissionDenied = true
-
-        @unknown default:
-            break
+            granted = await AVCaptureDevice.requestAccess(for: .video)
+        default:
+            granted = false
         }
-    }
-}
-
-
-// MARK: - Camera Input
-
-extension CameraManager {
-
-    func setupCameraInput(
-        position: AVCaptureDevice.Position = .back
-    ) {
-
-        guard let device = AVCaptureDevice.default(
-            .builtInWideAngleCamera,
-            for: .video,
-            position: position
-        ) else {
-            return
+        await MainActor.run {
+            isAuthorized = granted
+            if !granted { error = .permissionDenied }
         }
-
-        do {
-
-            let input = try AVCaptureDeviceInput(
-                device: device
-            )
-
-            guard session.canAddInput(input) else {
-                return
-            }
-
-            session.addInput(input)
-
-            videoInput = input
-
-            isUsingFrontCamera =
-                position == .front
-
-        } catch {
-
-            print(
-                "Camera input error:",
-                error.localizedDescription
-            )
-        }
-    }
-}
-
-
-// MARK: - Photo Output
-
-extension CameraManager {
-
-    func setupPhotoOutput() {
-
-        guard session.canAddOutput(
-            photoOutput
-        ) else {
-            return
-        }
-
-        session.addOutput(photoOutput)
-
-        photoOutput.isHighResolutionCaptureEnabled = true
+        return granted
     }
 
-    func takePhoto() {
+    // MARK: - Start / Stop
+    func start() async {
+        guard await requestPermission() else { return }
 
-        let settings = AVCapturePhotoSettings()
+        sessionQueue.async { [weak self] in
+            guard let self else { return }
+            if !self.isConfigured { self.configureSession() }
+            guard self.isConfigured else { return }
 
-        if let device = videoInput?.device,
-           device.hasFlash {
-
-            settings.flashMode =
-                isFlashOn ? .on : .off
-        }
-
-        photoOutput.capturePhoto(
-            with: settings,
-            delegate: self
-        )
-    }
-}
-
-
-// MARK: - Photo Capture Delegate
-
-extension CameraManager:
-    AVCapturePhotoCaptureDelegate {
-
-    func photoOutput(
-        _ output: AVCapturePhotoOutput,
-        didFinishProcessingPhoto photo: AVCapturePhoto,
-        error: Error?
-    ) {
-
-        if let error {
-
-            print(
-                "Capture error:",
-                error.localizedDescription
-            )
-
-            return
-        }
-
-        guard
-            let data = photo.fileDataRepresentation(),
-            let image = UIImage(data: data)
-        else {
-            return
-        }
-
-        DispatchQueue.main.async {
-
-            self.capturedImage = image
-        }
-    }
-}
-
-
-// MARK: - QR Code
-
-extension CameraManager {
-
-    func setupQRCodeOutput() {
-
-        guard session.canAddOutput(
-            metadataOutput
-        ) else {
-            return
-        }
-
-        session.addOutput(metadataOutput)
-
-        metadataOutput.setMetadataObjectsDelegate(
-            self,
-            queue: .main
-        )
-
-        metadataOutput.metadataObjectTypes = [
-            .qr
-        ]
-    }
-
-    func resetQRCode() {
-
-        scannedQRCode = nil
-    }
-}
-
-
-// MARK: - QR Metadata Delegate
-
-extension CameraManager:
-    AVCaptureMetadataOutputObjectsDelegate {
-
-    func metadataOutput(
-        _ output: AVCaptureMetadataOutput,
-        didOutput metadataObjects: [AVMetadataObject],
-        from connection: AVCaptureConnection
-    ) {
-
-        guard
-            let object =
-                metadataObjects.first
-                as? AVMetadataMachineReadableCodeObject,
-            let value = object.stringValue
-        else {
-            return
-        }
-
-        guard scannedQRCode == nil else {
-            return
-        }
-
-        scannedQRCode = value
-
-        print("QR Code:", value)
-    }
-}
-
-
-// MARK: - Start / Stop
-
-extension CameraManager {
-
-    func start() {
-
-        guard isConfigured else {
-            configure()
-            return
-        }
-
-        guard !session.isRunning else {
-            return
-        }
-
-        DispatchQueue.global(
-            qos: .userInitiated
-        ).async {
-
-            self.session.startRunning()
-
-            DispatchQueue.main.async {
-                self.isRunning = true
-            }
+            if !self.session.isRunning { self.session.startRunning() }
+            let running = self.session.isRunning
+            DispatchQueue.main.async { self.isRunning = running }
         }
     }
 
     func stop() {
-
-        guard session.isRunning else {
-            return
-        }
-
-        DispatchQueue.global(
-            qos: .userInitiated
-        ).async {
-
+        sessionQueue.async { [weak self] in
+            guard let self, self.session.isRunning else { return }
             self.session.stopRunning()
-
-            DispatchQueue.main.async {
-                self.isRunning = false
-            }
+            DispatchQueue.main.async { self.isRunning = false }
         }
     }
-}
 
+    // MARK: - Configure (sessionQueue)
+    private func configureSession() {
+        session.beginConfiguration()
+        defer { session.commitConfiguration() }
 
-// MARK: - Camera Switch
+        session.sessionPreset = .photo
 
-extension CameraManager {
+        guard
+            let device = Self.device(for: .back),
+            let input = try? AVCaptureDeviceInput(device: device),
+            session.canAddInput(input),
+            session.canAddOutput(photoOutput)
+        else {
+            DispatchQueue.main.async { self.error = .configurationFailed }
+            return
+        }
 
+        session.addInput(input)
+        session.addOutput(photoOutput)
+        isConfigured = true
+    }
+
+    private static func device(for position: AVCaptureDevice.Position) -> AVCaptureDevice? {
+        AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: position)
+    }
+
+    // MARK: - Switch camera
     func switchCamera() {
+        sessionQueue.async { [weak self] in
+            guard let self, self.isConfigured else { return }
 
-        guard let currentInput = videoInput else {
-            return
-        }
+            let newPosition: AVCaptureDevice.Position = self.position == .back ? .front : .back
+            guard
+                let device = Self.device(for: newPosition),
+                let newInput = try? AVCaptureDeviceInput(device: device)
+            else { return }
 
-        let currentPosition =
-            currentInput.device.position
+            self.session.beginConfiguration()
+            self.session.inputs.forEach { self.session.removeInput($0) }
 
-        let newPosition:
-            AVCaptureDevice.Position =
-            currentPosition == .back
-            ? .front
-            : .back
-
-        guard let device =
-            AVCaptureDevice.default(
-                .builtInWideAngleCamera,
-                for: .video,
-                position: newPosition
-            )
-        else {
-            return
-        }
-
-        do {
-
-            let newInput =
-                try AVCaptureDeviceInput(
-                    device: device
-                )
-
-            session.beginConfiguration()
-
-            session.removeInput(currentInput)
-
-            if session.canAddInput(newInput) {
-
-                session.addInput(newInput)
-
-                videoInput = newInput
-
-                isUsingFrontCamera =
-                    newPosition == .front
-            } else {
-
-                session.addInput(currentInput)
+            if self.session.canAddInput(newInput) {
+                self.session.addInput(newInput)
+                DispatchQueue.main.async {
+                    self.position = newPosition
+                    if newPosition == .front { self.flashMode = .off }
+                }
+            } else if let old = Self.device(for: self.position),
+                      let oldInput = try? AVCaptureDeviceInput(device: old),
+                      self.session.canAddInput(oldInput) {
+                self.session.addInput(oldInput)   // roll back
             }
-
-            session.commitConfiguration()
-
-        } catch {
-
-            print(
-                "Switch camera error:",
-                error.localizedDescription
-            )
+            self.session.commitConfiguration()
         }
     }
-}
 
-
-// MARK: - Flash
-
-extension CameraManager {
-
+    // MARK: - Flash
     func toggleFlash() {
-
-        guard
-            let device = videoInput?.device,
-            device.hasTorch
-        else {
-            return
+        switch flashMode {
+        case .off:  flashMode = .on
+        case .on:   flashMode = .auto
+        default:    flashMode = .off
         }
+    }
 
-        do {
+    // MARK: - Capture
+    func capturePhoto() async throws -> UIImage {
+        try await withCheckedThrowingContinuation { continuation in
+            sessionQueue.async { [weak self] in
+                guard let self, self.session.isRunning else {
+                    continuation.resume(throwing: CameraError.captureFailed)
+                    return
+                }
 
-            try device.lockForConfiguration()
+                let settings = AVCapturePhotoSettings()
+                if self.photoOutput.supportedFlashModes.contains(self.flashMode) {
+                    settings.flashMode = self.flashMode
+                }
 
-            if device.torchMode == .on {
-
-                device.torchMode = .off
-                isFlashOn = false
-
-            } else {
-
-                device.torchMode = .on
-                isFlashOn = true
+                let id = settings.uniqueID
+                let delegate = PhotoDelegate { [weak self] result in
+                    self?.sessionQueue.async { self?.inFlight[id] = nil }
+                    continuation.resume(with: result)
+                }
+                self.inFlight[id] = delegate    // keep the delegate alive until finished
+                self.photoOutput.capturePhoto(with: settings, delegate: delegate)
             }
-
-            device.unlockForConfiguration()
-
-        } catch {
-
-            print(
-                "Flash error:",
-                error.localizedDescription
-            )
         }
     }
 }
 
+// MARK: - Photo delegate
+private nonisolated final class PhotoDelegate: NSObject,
+                                               AVCapturePhotoCaptureDelegate,
+                                               @unchecked Sendable {
+    private let completion: @Sendable (Result<UIImage, Error>) -> Void
 
-// MARK: - Zoom
+    init(completion: @escaping @Sendable (Result<UIImage, Error>) -> Void) {
+        self.completion = completion
+    }
 
-extension CameraManager {
-
-    func setZoom(
-        _ value: CGFloat
-    ) {
-
-        guard let device = videoInput?.device else {
-            return
+    func photoOutput(_ output: AVCapturePhotoOutput,
+                     didFinishProcessingPhoto photo: AVCapturePhoto,
+                     error: Error?) {
+        if let error {
+            completion(.failure(error))
+        } else if let data = photo.fileDataRepresentation(),
+                  let image = UIImage(data: data) {
+            completion(.success(image))
+        } else {
+            completion(.failure(CameraManager.CameraError.captureFailed))
         }
-
-        let maxZoom =
-            min(
-                device.activeFormat.videoMaxZoomFactor,
-                10.0
-            )
-
-        let newZoom =
-            max(
-                1.0,
-                min(value, maxZoom)
-            )
-
-        do {
-
-            try device.lockForConfiguration()
-
-            device.videoZoomFactor = newZoom
-
-            device.unlockForConfiguration()
-
-            DispatchQueue.main.async {
-                self.zoom = newZoom
-            }
-
-        } catch {
-
-            print(
-                "Zoom error:",
-                error.localizedDescription
-            )
-        }
-    }
-
-    func zoomIn() {
-
-        setZoom(
-            zoom + 0.5
-        )
-    }
-
-    func zoomOut() {
-
-        setZoom(
-            zoom - 0.5
-        )
-
-    }
-
-    func resetZoom() {
-
-        setZoom(1.0)
     }
 }
-
-
-// MARK: - Upload QR Image
-
-extension CameraManager {
-
-    func scanQRCode(
-        from image: UIImage
-    ) -> String? {
-
-        guard
-            let ciImage = CIImage(
-                image: image
-            )
-        else {
-            return nil
-        }
-
-        let detector = CIDetector(
-            ofType: CIDetectorTypeQRCode,
-            context: CIContext(),
-            options: [
-                CIDetectorAccuracy:
-                    CIDetectorAccuracyHigh
-            ]
-        )
-
-        let features =
-            detector?.features(
-                in: ciImage
-            )
-
-        return features?
-            .compactMap {
-                ($0 as? CIQRCodeFeature)?
-                    .messageString
-            }
-            .first
-    }
-
-    func handleUploadedImage(
-        _ image: UIImage
-    ) {
-
-        capturedImage = image
-
-        guard let qrValue =
-            scanQRCode(from: image)
-        else {
-
-            print("QR Code not found")
-
-            return
-        }
-
-        scannedQRCode = qrValue
-
-        print(
-            "Uploaded QR:",
-            qrValue
-        )
-    }
-}
-
-
-// MARK: - Cleanup
-
-extension CameraManager {
-
-    func cleanup() {
-
-        stop()
-
-        scannedQRCode = nil
-        capturedImage = nil
-
-        isFlashOn = false
-        zoom = 1.0
-    }
-
-//    deinit {
-//
-//        stop()
-//    }
-}
-
-
-

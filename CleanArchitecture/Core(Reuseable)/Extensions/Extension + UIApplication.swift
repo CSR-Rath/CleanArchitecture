@@ -9,7 +9,7 @@ import UIKit
 
 extension UIApplication {
 
-    var keyWindow: UIWindow? {
+    private var keyWindow: UIWindow? {
         connectedScenes
             .compactMap { $0 as? UIWindowScene}
             .flatMap(\.windows)
@@ -21,20 +21,18 @@ extension UIApplication {
         let root = base ?? keyWindow?.rootViewController
 
         if let navigationController = root as? UINavigationController {
-
-            return topMostViewController(  base: navigationController.visibleViewController)
+            return topMostViewController(base: navigationController.visibleViewController)
         }
 
         if let tabBarController = root as? UITabBarController {
-
             return topMostViewController(base: tabBarController.selectedViewController)
         }
 
         if let presented = root?.presentedViewController {
-
             return topMostViewController(base: presented)
         }
 
         return root
     }
 }
+

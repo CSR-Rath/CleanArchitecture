@@ -15,6 +15,18 @@ public final class HomeDIContainer {
     }
     
     
+    public func makeHomeUsace() -> HomeViewModel {
+        let remoteDataSource = FeedRemoteDataSource(networkClient: networkClient)
+        let localDataSource = FeedLocalDataSource()
+        let repository = FeedRepositoryImpl(
+            remoteDataSource: remoteDataSource,
+            localDataSource: localDataSource
+        )
+        let useCase = GetFeedUseCase(repository: repository)
+        let viewModel = HomeViewModel(getFeedUseCase: useCase)
+        return viewModel
+    }
+    
     // option 1
     public func makeHomeVM() -> HomeViewModel {
         let remoteDataSource = FeedRemoteDataSource(networkClient: networkClient)

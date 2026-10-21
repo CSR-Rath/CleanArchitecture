@@ -26,10 +26,6 @@ extension Color {
     )
     
     static let appBackground = Color.gray
-//    Color.dynamic(
-//        light: "#F5F5F5",
-//        dark: "#F5F5F5"
-//    )
     
     static let cardBackground = Color.dynamic(
         light: "#F5F5F5",

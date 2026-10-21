@@ -76,7 +76,7 @@ final class GetFeedUseCaseTests: XCTestCase {
 //        let useCase = GetFeedUseCase(repository: mockRepository)
 //        let items = try await useCase.execute()
 //
-//        print("🧪 items: \(items)")
+//       debugLog("🧪 items: \(items)")
 //
 //
 //        XCTAssertEqual(items.count, 1)

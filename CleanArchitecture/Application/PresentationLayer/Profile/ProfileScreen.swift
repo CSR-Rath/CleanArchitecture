@@ -17,29 +17,14 @@ public struct ProfileScreen: View {
     }
 
     public var body: some View {
-        NavigationView {
+
             VStack {
-                if viewModel.isLoading {
+                if viewModel.state == .loading {
                     ProgressView("Loading Profile...")
                         // .accessibilityIdentifier(AccessibilityID.Profile.loadingView)
-                } else if let error = viewModel.errorMessage {
-                    VStack(spacing: 12) {
-                        Text("Error: \(error)")
-                            // .accessibilityIdentifier(AccessibilityID.Profile.errorText)
-                            .foregroundColor(.red)
-                        Button("Retry") {
-                            Task { await viewModel.loadProfile() }
-                        }
-//                        // .accessibilityIdentifier(AccessibilityID.Profile.retryButton)
-//                        .buttonStyle(.borderedProminent)
-                    }
-                } else if let user = viewModel.user {
+                }else if let user = viewModel.user {
                     
                     VStack{
-                        Button("Retry") {
-                            isShowSheet = true
-                        }
-                        // .accessibilityIdentifier(AccessibilityID.Profile.retryButton)
                         
                         List {
                             Section(header: Text("Details")) {
@@ -52,7 +37,7 @@ public struct ProfileScreen: View {
                         // .accessibilityIdentifier(AccessibilityID.Profile.detailsList)
                     }
                     .sheet(isPresented: $isShowSheet) {
-                        Text("data: \(viewModel.user ?? User(id: -1, name: "", email: ""))")
+                        Text("data: \(viewModel.user?.email ?? "")")
                     }
                 } else {
                     if #available(iOS 17.0, *) {
@@ -62,10 +47,16 @@ public struct ProfileScreen: View {
                     }
                 }
             }
-            .navigationTitle("Profile")
-        }
-        .task {
-            await viewModel.loadProfile()
-        }
+
+            .onViewDidLoad {
+              
+            }
+            .onAppear(){
+                Task{
+                    await viewModel.loadProfile()
+                }
+            }
+           
+
     }
 }

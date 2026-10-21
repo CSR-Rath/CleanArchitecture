@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+// MARK: - Handle get size view
 private struct ViewSizePreferenceKey: PreferenceKey {
 
     static var defaultValue: CGSize = .zero
@@ -40,6 +41,9 @@ extension View {
 }
 
 
+
+
+// MARK: - Handle cornerRadius
 struct RoundedCorner: Shape {
     var radius: CGFloat
     var corners: UIRectCorner
@@ -68,4 +72,43 @@ extension View {
         )
     }
     
+}
+
+
+
+
+// MARK: Check condition Bool to use view
+extension View {
+    @ViewBuilder
+    func `if`<Content: View>(_ condition: Bool, transform: (Self) -> Content) -> some View {
+        if condition {
+            transform(self)
+        } else {
+            self
+        }
+    }
+}
+
+
+
+
+// MARK: Check should use dismissKeyboard or not
+extension View {
+    @ViewBuilder
+    func dismissKeyboardOnTap(enabled: Bool = true) -> some View {
+        if enabled {
+            self
+                .contentShape(Rectangle())
+                .onTapGesture {
+                    UIApplication.shared.sendAction(
+                        #selector(UIResponder.resignFirstResponder),
+                        to: nil,
+                        from: nil,
+                        for: nil
+                    )
+                }
+        } else {
+            self
+        }
+    }
 }

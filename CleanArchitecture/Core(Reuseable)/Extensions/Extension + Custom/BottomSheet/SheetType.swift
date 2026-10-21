@@ -8,7 +8,6 @@
 import SwiftUI
 import UIKit
 
-// MARK: - Sheet Type
 
 enum SheetType {
     case fullScreen

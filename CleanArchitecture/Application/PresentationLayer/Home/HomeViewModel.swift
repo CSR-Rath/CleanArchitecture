@@ -15,6 +15,8 @@ public final class HomeViewModel: ObservableObject {
     @Published public private(set) var items: [FeedItem] = []
     @Published public private(set) var isLoading: Bool = false
     @Published public private(set) var errorMessage: String?
+    
+    @Published var isUIStateView : UIStateView = .idle
 
     private let getFeedUseCase: GetFeedUseCaseProtocol
 
@@ -24,13 +26,15 @@ public final class HomeViewModel: ObservableObject {
     }
 
     public func loadFeed() async {
-        isLoading = true
-        errorMessage = nil
+        
+        isUIStateView = .loading
+        
         do {
             items = try await getFeedUseCase.execute()
+            isUIStateView = .idle
         } catch {
-            errorMessage = error.localizedDescription
+            isUIStateView = .failed(error.asError)
+
         }
-        isLoading = false
     }
 }

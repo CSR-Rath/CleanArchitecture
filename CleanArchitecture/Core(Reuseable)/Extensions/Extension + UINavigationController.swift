@@ -7,6 +7,14 @@
 
 import UIKit
 
+
+
+final class NavigationSwipeManager {
+    static let shared = NavigationSwipeManager()
+    var isEnabled: Bool = true
+    private init() {}
+}
+
 /*
  
  Handles the navigation controller's swipe-back gesture
@@ -15,16 +23,6 @@ import UIKit
  and hides the default back navigation behavior when needed.
  
 */
-
-final class NavigationSwipeManager {
-    static let shared = NavigationSwipeManager()
-    
-    var isEnabled: Bool = true
-    
-    private init() {}
-    
-}
-
 
 extension UINavigationController: @retroactive UIGestureRecognizerDelegate {
     

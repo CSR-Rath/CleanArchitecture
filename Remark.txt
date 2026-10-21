@@ -26,6 +26,8 @@
  │       ├── NetworkError.swift
  │       ├── NetworkClient.swift
  │       └── APIRequestBuilder.swift
+ |
+ |
  ├── DataLayer
  │   ├── DTOs (1)
  │   │   ├── FeedItemDTO.swift
@@ -43,6 +45,8 @@
  │   └── RepositoriesImpl (4)
  │       ├── FeedRepositoryImpl.swift
  │       └── UserRepositoryImpl.swift
+ |
+ |
  ├── DomainLayer
  │   ├── Entities (1)
  │   │   ├── FeedItem.swift
@@ -55,19 +59,129 @@
  │       │   └── GetFeedUseCase.swift
  │       └── Profile
  │           └── GetUserProfileUseCase.swift
+ |
+ |
  ├── PresentationLayer
- │   └── Scenes
- │       ├── Home
- │       │   ├── DI
- │       │   │   └── HomeDIContainer.swift
- │       │   ├── ViewModels
- │       │   │   └── HomeViewModel.swift
- │       │   └── Views
- │       │       └── HomeView.swift
- │       └── Profile
- │           ├── DI
- │           │   └── ProfileDIContainer.swift
- │           ├── ViewModels
- │           │   └── ProfileViewModel.swift
- │           └── Views
- │               └── ProfileView.swift
+     └── Scenes
+         ├── Home
+         │   ├── DI
+         │   │   └── HomeDIContainer.swift
+         │   ├── ViewModels
+         │   │   └── HomeViewModel.swift
+         │   └── Views
+         │       └── HomeView.swift
+         └── Profile
+             ├── DI
+             │   └── ProfileDIContainer.swift
+             ├── ViewModels
+             │   └── ProfileViewModel.swift
+             └── Views
+                 └── ProfileView.swift
+
+
+view --> VM --> Ucase --> Repo --> Repo Imp --> DataSource --> API Service --> Response --> retrun data back until view
+
+// MARK: - MVVM + Clean Architecture API flow
+
+┌──────────────────────┐
+│        VIEW          │
+│   LoginView          │
+└──────────┬───────────┘
+           │
+           │ login()
+           ▼
+┌──────────────────────┐
+│     VIEWMODEL        │
+│   LoginViewModel     │
+└──────────┬───────────┘
+           │
+           │ execute()
+           ▼
+┌──────────────────────┐
+│       USE CASE       │
+│   LoginUseCase       │
+└──────────┬───────────┘
+           │
+           │ login()
+           ▼
+┌──────────────────────┐
+│     REPOSITORY       │
+│     Protocol         │
+└──────────┬───────────┘
+           │
+           │ implemented by
+           ▼
+┌──────────────────────┐
+│   REPOSITORY IMPL    │
+│ LoginRepositoryImpl  │
+└──────────┬───────────┘
+           │
+           │ get data
+           ▼
+┌──────────────────────┐
+│    DATA SOURCE       │
+│ RemoteDataSource     │
+└──────────┬───────────┘
+           │
+           │ request
+           ▼
+┌──────────────────────┐
+│     API SERVICE      │
+│   LoginAPIService    │
+└──────────┬───────────┘
+           │
+           │ HTTP Request
+           ▼
+       ┌─────────┐
+       │ SERVER  │
+       └────┬────┘
+            │
+            │ HTTP Response
+            ▼
+┌──────────────────────┐
+│     API SERVICE      │
+│   Response / DTO     │
+└──────────┬───────────┘
+           │
+           ▼
+┌──────────────────────┐
+│    DATA SOURCE       │
+└──────────┬───────────┘
+           │
+           ▼
+┌──────────────────────┐
+│   REPOSITORY IMPL    │
+│ DTO → Domain Model   │
+└──────────┬───────────┘
+           │
+           ▼
+┌──────────────────────┐
+│     REPOSITORY       │
+└──────────┬───────────┘
+           │
+           ▼
+┌──────────────────────┐
+│       USE CASE       │
+└──────────┬───────────┘
+           │
+           ▼
+┌──────────────────────┐
+│      VIEWMODEL       │
+│ Update UI State      │
+└──────────┬───────────┘
+           │
+           ▼
+┌──────────────────────┐
+│        VIEW          │
+│ Show Success/Error   │
+└──────────────────────┘
+
+
+
+/*
+
+disable log
+OS_ACTIVITY_MODE = disable
+
+/*
+

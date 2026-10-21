@@ -74,10 +74,8 @@ struct BottomSheetView<Content: View>: View {
     var body: some View {
         ZStack(alignment: .bottom) {
 
-            // MARK: Background
-
                 Color.black
-                    .opacity(0.4)
+                    .opacity(0.3)
                     .ignoresSafeArea()
                     .onTapGesture {
                         guard dismissible else { return}
@@ -145,7 +143,6 @@ struct BottomSheetView<Content: View>: View {
 
                 if isFullScreen {
                     let progress = min( translation / 300, 1)
-
                     scale = 1 - (progress * 0.2)
                 }
             }
@@ -165,7 +162,6 @@ struct BottomSheetView<Content: View>: View {
 
     private func setup() {
         currentFraction = fractions.first ?? 0.4
-
         withAnimation( .spring( response: 0.35, dampingFraction: 0.85)) {
             isShown = true
         }

@@ -9,11 +9,12 @@ import Foundation
 import Combine
 
 @MainActor
-public final class ProfileViewModel: ObservableObject {
+public final class ProfileViewModel:  ObservableObject {
+    
+    @Published var state: UIStateView = .idle
     @Published public private(set) var user: User?
-    @Published public private(set) var isLoading: Bool = false
-    @Published public private(set) var errorMessage: String?
-
+    
+    
     private let getUserProfileUseCase: GetUserProfileUseCaseProtocol
 
     public init(getUserProfileUseCase: GetUserProfileUseCaseProtocol) {
@@ -21,13 +22,13 @@ public final class ProfileViewModel: ObservableObject {
     }
 
     public func loadProfile(userId: Int = 1) async {
-        isLoading = true
-        errorMessage = nil
+     
+        state = .loading
         do {
             user = try await getUserProfileUseCase.execute(userId: userId)
+            state = .idle
         } catch {
-            errorMessage = error.localizedDescription
+            state = .failed(error.asError)
         }
-        isLoading = false
     }
 }

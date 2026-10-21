@@ -1,27 +1,49 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
- "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+"http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+
 <plist version="1.0">
-<dict>
-
-    <key>CFBundleDisplayName</key>
-    <string>My App</string>
-
-    <key>CFBundleURLTypes</key>
-    <array>
-        <dict>
-            <key>CFBundleURLSchemes</key>
-            <array>
-                <string>myapp</string>
-            </array>
-        </dict>
-    </array>
-
-    <key>NSCameraUsageDescription</key>
-    <string>This app uses the camera to scan QR codes.</string>
-
-    <key>NSFaceIDUsageDescription</key>
-    <string>This app uses Face ID to authenticate you.</string>
-
-</dict>
+    <dict>
+        
+        <!-- App Name -->
+        <key>CFBundleDisplayName</key>
+        <string>My App</string>
+        
+        <!-- URL Scheme -->
+        <key>CFBundleURLTypes</key>
+        <array>
+            <dict>
+                <key>CFBundleURLSchemes</key>
+                <array>
+                    <string>myapp</string>
+                </array>
+            </dict>
+        </array>
+        
+        <!-- Camera -->
+        <key>NSCameraUsageDescription</key>
+        <string>This app uses the camera to scan QR codes.</string>
+        
+        <!-- Face ID -->
+        <key>NSFaceIDUsageDescription</key>
+        <string>This app uses Face ID to authenticate you.</string>
+        
+        
+        
+        <!-- Custom Fonts -->
+        <key>UIAppFonts</key>
+        <array>
+            <!-- English Fonts -->
+            <string>GoogleSans-Regular.ttf</string>
+            <string>GoogleSans-Medium.ttf</string>
+            <string>GoogleSans-Bold.ttf</string>
+            <string>GoogleSans_17pt-Regular.ttf</string>
+            <!-- Khmer Fonts -->
+            <string>KantumruyPro-Regular.ttf</string>
+            <string>KantumruyPro-Medium.ttf</string>
+            <string>KantumruyPro-Bold.ttf</string>
+            <string>KantumruyPro-Light.ttf</string>
+        </array>
+        
+    </dict>
 </plist>
