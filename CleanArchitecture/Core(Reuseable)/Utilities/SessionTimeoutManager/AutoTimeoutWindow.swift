@@ -18,3 +18,8 @@ final class AutoTimeoutWindow: UIWindow {
         }
     }
 }
+
+//let window = AutoTimeoutWindow(windowScene: windowScene)
+//window.rootViewController = hostingController
+//self.window = window
+//window.makeKeyAndVisible()

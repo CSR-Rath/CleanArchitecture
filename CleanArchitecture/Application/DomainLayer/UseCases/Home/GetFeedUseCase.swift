@@ -7,18 +7,18 @@
 
 import Foundation
 
-public protocol GetFeedUseCaseProtocol {
+protocol GetFeedUseCaseProtocol {
     func execute() async throws -> [FeedItem]
 }
 
-public final class GetFeedUseCase: GetFeedUseCaseProtocol {
+final class GetFeedUseCase: GetFeedUseCaseProtocol {
     private let repository: FeedRepositoryProtocol
-
-    public init(repository: FeedRepositoryProtocol) {
+    
+    init(repository: FeedRepositoryProtocol) {
         self.repository = repository
     }
-
-    public func execute() async throws -> [FeedItem] {
+    
+    func execute() async throws -> [FeedItem] {
         return try await repository.getFeed()
     }
 }

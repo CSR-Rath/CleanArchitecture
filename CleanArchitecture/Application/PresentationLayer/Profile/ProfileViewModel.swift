@@ -9,26 +9,26 @@ import Foundation
 import Combine
 
 @MainActor
-public final class ProfileViewModel:  ObservableObject {
+final class ProfileViewModel:  ObservableObject {
     
-    @Published var state: UIStateView = .idle
-    @Published public private(set) var user: User?
+    @Published var state: UIState = .idle
+    @Published private(set) var user: User?
     
     
     private let getUserProfileUseCase: GetUserProfileUseCaseProtocol
 
-    public init(getUserProfileUseCase: GetUserProfileUseCaseProtocol) {
+    init(getUserProfileUseCase: GetUserProfileUseCaseProtocol) {
         self.getUserProfileUseCase = getUserProfileUseCase
     }
 
-    public func loadProfile(userId: Int = 1) async {
+    func loadProfile(userId: Int = 1) async {
      
         state = .loading
         do {
             user = try await getUserProfileUseCase.execute(userId: userId)
             state = .idle
         } catch {
-            state = .failed(error.asError)
+//            state = .failed(error.localizedDescription)
         }
     }
 }

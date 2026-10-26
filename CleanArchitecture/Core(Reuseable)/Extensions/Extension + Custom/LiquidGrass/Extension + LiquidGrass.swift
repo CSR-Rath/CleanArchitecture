@@ -77,7 +77,6 @@ struct LiquidGrassDemo: View {
             BaseButton("Testing", type: .custom, color: .white) {
                 isPresented.toggle()
             }
-//            .liquidBackground()
             
             BaseButton("Testing") {
                 isPresented.toggle()

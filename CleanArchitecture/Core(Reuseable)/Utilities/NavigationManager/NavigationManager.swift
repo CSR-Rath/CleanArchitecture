@@ -8,51 +8,27 @@
 import SwiftUI
 import Combine
 
-class NavigationManager: ObservableObject {
-    // Using a strongly-typed array instead of NavigationPath
-    @Published var path: [Destination] = []
-    
-    func push(_ destination: Destination) {
-        path.append(destination)
+@MainActor
+final class NavigationManager: ObservableObject {
+    @Published var path = NavigationPath()
+
+    func push(_ route: AppRoute) {
+        path.append(route)
     }
-    
-    /// Pops a specific number of screens
-    func pop(_ count: Int = 1) {
-        guard path.count >= count else {
-            popToRoot()
-            return
-        }
-        path.removeLast(count)
+
+    func pop() {
+        guard !path.isEmpty else { return }
+        path.removeLast()
     }
-    
-    /// Safely pops back until it finds a specific destination type
-    func popToBefore(_ destinationCase: DestinationCase) {
-        if let index = path.firstIndex(where: { $0.caseType == destinationCase }) {
-            path = Array(path[...index])
-        }
+
+    func pop(_ count: Int) {
+        guard count > 0, !path.isEmpty else { return }
+        path.removeLast(min(count, path.count))
     }
-    
+
     func popToRoot() {
-        path.removeAll()
+        guard !path.isEmpty else { return }
+        path = NavigationPath()
     }
 }
 
-// Help helper types for explicit popping
-enum DestinationCase {
-    case details, profile, settings
-}
-
-enum Destination: Hashable {
-    case details(productId: String)
-    case profile(username: String)
-    case settings
-    
-    // Map destinations back to their base type for easier matching
-    var caseType: DestinationCase {
-        switch self {
-        case .details: return .details
-        case .profile: return .profile
-        case .settings: return .settings
-        }
-    }
-}

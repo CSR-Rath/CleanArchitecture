@@ -7,8 +7,8 @@
 
 import Foundation
 
-public struct UserDTO: Codable {
-    public let id: Int?
-    public let name: String?
-    public let email: String?
+struct UserDTO: Codable {
+    let id: Int?
+    let name: String?
+    let email: String?
 }

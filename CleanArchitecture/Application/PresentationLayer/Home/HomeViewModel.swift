@@ -9,23 +9,23 @@ import Foundation
 import Combine
 
 @MainActor
-public final class HomeViewModel: ObservableObject {
+final class HomeViewModel: ObservableObject {
     
     // private(set) Can modify inside the class
-    @Published public private(set) var items: [FeedItem] = []
-    @Published public private(set) var isLoading: Bool = false
-    @Published public private(set) var errorMessage: String?
+    @Published private(set) var items: [FeedItem] = []
+    @Published private(set) var isLoading: Bool = false
+    @Published private(set) var errorMessage: String?
     
-    @Published var isUIStateView : UIStateView = .idle
+    @Published var isUIStateView : UIState = .idle
 
     private let getFeedUseCase: GetFeedUseCaseProtocol
 
-    public init(getFeedUseCase: GetFeedUseCaseProtocol) {
+    init(getFeedUseCase: GetFeedUseCaseProtocol) {
         self.getFeedUseCase = getFeedUseCase
         
     }
 
-    public func loadFeed() async {
+    func loadFeed() async {
         
         isUIStateView = .loading
         
@@ -33,7 +33,7 @@ public final class HomeViewModel: ObservableObject {
             items = try await getFeedUseCase.execute()
             isUIStateView = .idle
         } catch {
-            isUIStateView = .failed(error.asError)
+//            isUIStateView = .failedAction(error: <#T##AppMessage#>, leftBtn: <#T##ButtonInfo?#>, rightBtn: <#T##ButtonInfo#>)
 
         }
     }

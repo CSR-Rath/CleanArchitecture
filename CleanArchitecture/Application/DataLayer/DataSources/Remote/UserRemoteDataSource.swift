@@ -7,18 +7,18 @@
 
 import Foundation
 
-public protocol UserRemoteDataSourceProtocol {
+protocol UserRemoteDataSourceProtocol {
     func fetchUser(id: Int) async throws -> UserDTO
 }
 
-public final class UserRemoteDataSource: UserRemoteDataSourceProtocol {
+final class UserRemoteDataSource: UserRemoteDataSourceProtocol {
     private let networkClient: NetworkClientProtocol
 
-    public init(networkClient: NetworkClientProtocol) {
+    init(networkClient: NetworkClientProtocol) {
         self.networkClient = networkClient
     }
 
-    public func fetchUser(id: Int) async throws -> UserDTO {
+    func fetchUser(id: Int) async throws -> UserDTO {
         let request = try APIRequestBuilder.makeRequest(path: .users(id: "\(id)"))
         return try await networkClient.request(request)
     }

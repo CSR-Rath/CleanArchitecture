@@ -8,41 +8,41 @@
 import XCTest
 @testable import CleanArchitecture
 
-public struct ProfilePageObject {
+struct ProfilePageObject {
     private let app: XCUIApplication
 
-    public init(app: XCUIApplication) {
+    init(app: XCUIApplication) {
         self.app = app
     }
 
     // MARK: - Queries
-    public var detailsList: XCUIElement {
+    var detailsList: XCUIElement {
         app.tables["profile_details_list"]
     }
 
-    public var loadingIndicator: XCUIElement {
+    var loadingIndicator: XCUIElement {
         app.activityIndicators["profile_loading_view"]
     }
 
-    public var retryButton: XCUIElement {
+    var retryButton: XCUIElement {
         app.buttons["profile_retry_button"]
     }
 
-    public var nameLabel: XCUIElement {
+    var nameLabel: XCUIElement {
         app.staticTexts["profile_name_text"]
     }
 
-    public var emailLabel: XCUIElement {
+    var emailLabel: XCUIElement {
         app.staticTexts["profile_email_text"]
     }
 
     // MARK: - Actions & Assertions
     @discardableResult
-    public func waitForProfileToLoad(timeout: TimeInterval = 5) -> Bool {
+    func waitForProfileToLoad(timeout: TimeInterval = 5) -> Bool {
         return detailsList.waitForExistence(timeout: timeout)
     }
 
-    public func tapRetry() {
+    func tapRetry() {
         retryButton.tap()
     }
 }

@@ -7,8 +7,8 @@
 
 import Foundation
 
-public enum UserMapper {
-    public static func mapToDomain(_ dto: UserDTO) -> User? {
+enum UserMapper {
+    static func mapToDomain(_ dto: UserDTO) -> User? {
         guard let id = dto.id else { return nil }
 
         return User(

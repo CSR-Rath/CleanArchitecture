@@ -7,11 +7,11 @@
 
 import Foundation
 
-public final class FeedRepositoryImpl: FeedRepositoryProtocol {
+final class FeedRepositoryImpl: FeedRepositoryProtocol {
     private let remoteDataSource: FeedRemoteDataSourceProtocol
     private let localDataSource: FeedLocalDataSourceProtocol
 
-    public init(
+    init(
         remoteDataSource: FeedRemoteDataSourceProtocol,
         localDataSource: FeedLocalDataSourceProtocol
     ) {
@@ -19,7 +19,7 @@ public final class FeedRepositoryImpl: FeedRepositoryProtocol {
         self.localDataSource = localDataSource
     }
 
-    public func getFeed() async throws -> [FeedItem] {
+    func getFeed() async throws -> [FeedItem] {
         do {
             let dtos = try await remoteDataSource.fetchPosts()
             try? localDataSource.savePosts(dtos)

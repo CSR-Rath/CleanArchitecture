@@ -7,6 +7,6 @@
 
 import Foundation
 
-public protocol FeedRepositoryProtocol {
+protocol FeedRepositoryProtocol {
     func getFeed() async throws -> [FeedItem]
 }

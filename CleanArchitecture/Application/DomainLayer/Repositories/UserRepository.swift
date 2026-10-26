@@ -7,6 +7,6 @@
 
 import Foundation
 
-public protocol UserRepositoryProtocol {
+protocol UserRepositoryProtocol {
     func getUser(id: Int) async throws -> User
 }

@@ -7,9 +7,9 @@
 
 import Foundation
 
-public struct FeedItemDTO: Codable {
-    public let id: Int?
-    public let userId: Int?
-    public let title: String?
-    public let body: String?
+struct FeedItemDTO: Codable {
+    let id: Int?
+    let userId: Int?
+    let title: String?
+    let body: String?
 }

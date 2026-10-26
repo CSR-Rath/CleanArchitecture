@@ -25,7 +25,7 @@ extension Color {
         dark: "#A6A6A6"
     )
     
-    static let appBackground = Color.gray
+    static let appBackground = Color.white
     
     static let cardBackground = Color.dynamic(
         light: "#F5F5F5",
@@ -49,9 +49,7 @@ extension Color {
 }
 
 
-extension Color{
-    static let shimmerColor = Color.gray.opacity(1.0)
-}
+
 
 
 

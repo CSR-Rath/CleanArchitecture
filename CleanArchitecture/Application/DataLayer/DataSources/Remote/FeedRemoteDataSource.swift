@@ -7,18 +7,18 @@
 
 import Foundation
 
-public protocol FeedRemoteDataSourceProtocol {
+protocol FeedRemoteDataSourceProtocol {
     func fetchPosts() async throws -> [FeedItemDTO]
 }
 
-public final class FeedRemoteDataSource: FeedRemoteDataSourceProtocol {
+final class FeedRemoteDataSource: FeedRemoteDataSourceProtocol {
     private let networkClient: NetworkClientProtocol
 
-    public init(networkClient: NetworkClientProtocol) {
+    init(networkClient: NetworkClientProtocol) {
         self.networkClient = networkClient
     }
 
-    public func fetchPosts() async throws -> [FeedItemDTO] {
+    func fetchPosts() async throws -> [FeedItemDTO] {
         let request = try APIRequestBuilder.makeRequest(path: .posts)
         return try await networkClient.request(request)
     }

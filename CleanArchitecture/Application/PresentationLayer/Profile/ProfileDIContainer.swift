@@ -7,15 +7,15 @@
 
 import SwiftUI
 
-public final class ProfileDIContainer {
+final class ProfileDIContainer {
     private let networkClient: NetworkClientProtocol
 
-    public init(networkClient: NetworkClientProtocol) {
+    init(networkClient: NetworkClientProtocol) {
         self.networkClient = networkClient
     }
     
     // option 1
-    public func makeProfileVM() -> ProfileViewModel {
+    func makeProfileVM() -> ProfileViewModel {
         let remoteDataSource = UserRemoteDataSource(networkClient: networkClient)
         let localDataSource = UserLocalDataSource()
         let repository = UserRepositoryImpl(
@@ -28,7 +28,7 @@ public final class ProfileDIContainer {
     }
 
     // option 2
-    public func makeProfileView() -> ProfileScreen {
+    func makeProfileView() -> ProfileScreen {
         let remoteDataSource = UserRemoteDataSource(networkClient: networkClient)
         let localDataSource = UserLocalDataSource()
         let repository = UserRepositoryImpl(

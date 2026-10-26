@@ -7,18 +7,18 @@
 
 import Foundation
 
-public protocol GetUserProfileUseCaseProtocol {
+protocol GetUserProfileUseCaseProtocol {
     func execute(userId: Int) async throws -> User
 }
 
-public final class GetUserProfileUseCase: GetUserProfileUseCaseProtocol {
+final class GetUserProfileUseCase: GetUserProfileUseCaseProtocol {
     private let repository: UserRepositoryProtocol
 
-    public init(repository: UserRepositoryProtocol) {
+    init(repository: UserRepositoryProtocol) {
         self.repository = repository
     }
 
-    public func execute(userId: Int) async throws -> User {
+    func execute(userId: Int) async throws -> User {
         return try await repository.getUser(id: userId)
     }
 }

@@ -7,8 +7,8 @@
 
 import Foundation
 
-public enum FeedMapper {
-    public static func mapToDomain(_ dto: FeedItemDTO) -> FeedItem? {
+enum FeedMapper {
+    static func mapToDomain(_ dto: FeedItemDTO) -> FeedItem? {
         guard let id = dto.id else { return nil }
 
         return FeedItem(

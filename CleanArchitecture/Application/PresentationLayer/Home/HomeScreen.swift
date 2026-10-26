@@ -7,14 +7,14 @@
 
 import SwiftUI
 
-public struct HomeScreen: View {
+struct HomeScreen: View {
     @StateObject private var viewModel: HomeViewModel
     
-    public init(viewModel: HomeViewModel) {
+    init(viewModel: HomeViewModel) {
         _viewModel = StateObject(wrappedValue: viewModel)
     }
     
-    public var body: some View {
+    var body: some View {
         BaseView(
             title: "Hello",
             isContentScrollView: true,

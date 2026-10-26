@@ -7,13 +7,13 @@
 
 import Foundation
 
-public struct FeedItem: Identifiable, Equatable {
-    public let id: Int
-    public let userId: Int
-    public let title: String
-    public let body: String
+struct FeedItem: Identifiable, Equatable {
+    let id: Int
+    let userId: Int
+    let title: String
+    let body: String
 
-    public init(id: Int, userId: Int, title: String, body: String) {
+    init(id: Int, userId: Int, title: String, body: String) {
         self.id = id
         self.userId = userId
         self.title = title

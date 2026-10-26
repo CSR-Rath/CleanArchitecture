@@ -8,7 +8,7 @@
 import XCTest
 
 open class BaseUITestCase: XCTestCase {
-    public var app: XCUIApplication!
+    var app: XCUIApplication!
 
     override open func setUp() {
         super.setUp()

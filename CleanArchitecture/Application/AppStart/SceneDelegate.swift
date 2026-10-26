@@ -20,12 +20,7 @@ final class SceneDelegate: NSObject, UIWindowSceneDelegate {
         guard let windowScene = scene as? UIWindowScene else {return}
         
         
-        let hostingController = UIHostingController(
-            rootView:
-                NavigationStack{
-                    StateDemoScreen()
-                }
-        )
+        let hostingController = UIHostingController(rootView: AppCoordinatorView())
         
         let window = AutoTimeoutWindow(windowScene: windowScene)
         window.rootViewController = hostingController
@@ -36,16 +31,3 @@ final class SceneDelegate: NSObject, UIWindowSceneDelegate {
         
     }
 }
-
-
-
-// MARK: - like this when setup UIWindow
-
-//func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
-//    guard let windowScene = (scene as? UIWindowScene) else { return }
-//
-//    let window = AutoTimeoutWindow(windowScene: windowScene)
-//    window.rootViewController = MyRootViewController()
-//    self.window = window
-//    window.makeKeyAndVisible()
-//}

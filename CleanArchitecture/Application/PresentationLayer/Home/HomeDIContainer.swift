@@ -7,15 +7,15 @@
 
 import SwiftUI
 
-public final class HomeDIContainer {
+final class HomeDIContainer {
     private let networkClient: NetworkClientProtocol
 
-    public init(networkClient: NetworkClientProtocol) {
+    init(networkClient: NetworkClientProtocol) {
         self.networkClient = networkClient
     }
     
     
-    public func makeHomeUsace() -> HomeViewModel {
+    func makeHomeUsace() -> HomeViewModel {
         let remoteDataSource = FeedRemoteDataSource(networkClient: networkClient)
         let localDataSource = FeedLocalDataSource()
         let repository = FeedRepositoryImpl(
@@ -28,7 +28,7 @@ public final class HomeDIContainer {
     }
     
     // option 1
-    public func makeHomeVM() -> HomeViewModel {
+    func makeHomeVM() -> HomeViewModel {
         let remoteDataSource = FeedRemoteDataSource(networkClient: networkClient)
         let localDataSource = FeedLocalDataSource()
         let repository = FeedRepositoryImpl(
@@ -42,7 +42,7 @@ public final class HomeDIContainer {
 
     
     // option 2
-    public func makeHomeView() -> HomeScreen {
+    func makeHomeView() -> HomeScreen {
         let remoteDataSource = FeedRemoteDataSource(networkClient: networkClient)
         let localDataSource = FeedLocalDataSource()
         let repository = FeedRepositoryImpl(

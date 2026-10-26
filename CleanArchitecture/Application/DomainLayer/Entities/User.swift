@@ -7,12 +7,12 @@
 
 import Foundation
 
-public struct User: Identifiable, Equatable {
-    public let id: Int
-    public let name: String
-    public let email: String
+struct User: Identifiable, Equatable {
+    let id: Int
+    let name: String
+    let email: String
 
-    public init(id: Int, name: String, email: String) {
+    init(id: Int, name: String, email: String) {
         self.id = id
         self.name = name
         self.email = email

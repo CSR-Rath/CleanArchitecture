@@ -1,0 +1,187 @@
+//
+//  Remark
+//  CleanArchitecture
+//
+//  Created by Sophearath.chhan on 9/18/26.
+//
+
+/*
+ 
+ DataLayer: For fetch data from server or local data
+ DomainLayer: For business logic
+ PresentationLayer: For UILogin and DisplayUI
+ 
+ 
+ DI =  Dependency Injection
+ DTO =  Data transfer object
+ 
+ 
+ 
+ MVVM-Clean-Architecture-Pattern-iOS
+ ├── Application
+ │   └── AppStart
+ │       └── MVVMCleanApp.swift
+ ├── Core
+ │   └── Networking
+ │       ├── NetworkError.swift
+ │       ├── NetworkClient.swift
+ │       └── APIRequestBuilder.swift
+ |
+ |
+ ├── DataLayer (2)
+ │   ├── DTOs (1)
+ │   │   ├── FeedItemDTO.swift
+ │   │   └── UserDTO.swift
+ │   ├── DataSources (2)
+ │   │   ├── Local
+ │   │   │   ├── FeedLocalDataSource.swift
+ │   │   │   └── UserLocalDataSource.swift
+ │   │   └── Remote
+ │   │       ├── FeedRemoteDataSource.swift
+ │   │       └── UserRemoteDataSource.swift
+ │   ├── Mappers (3)
+ │   │   ├── FeedMapper.swift
+ │   │   └── UserMapper.swift
+ │   └── RepositoriesImpl (4)
+ │       ├── FeedRepositoryImpl.swift
+ │       └── UserRepositoryImpl.swift
+ |
+ |
+ ├── DomainLayer (1)
+ │   ├── Entities (1)
+ │   │   ├── FeedItem.swift
+ │   │   └── User.swift
+ │   ├── Repositories (2)
+ │   │   ├── FeedRepositoryProtocol.swift
+ │   │   └── UserRepositoryProtocol.swift
+ │   └── UseCases (3)
+ │       ├── Home
+ │       │   └── GetFeedUseCase.swift
+ │       └── Profile
+ │           └── GetUserProfileUseCase.swift
+ |
+ |
+ ├── PresentationLayer
+     └── Scenes
+         ├── Home
+         │   ├── DI
+         │   │   └── HomeDIContainer.swift
+         │   ├── ViewModels
+         │   │   └── HomeViewModel.swift
+         │   └── Views
+         │       └── HomeView.swift
+         └── Profile
+             ├── DI
+             │   └── ProfileDIContainer.swift
+             ├── ViewModels
+             │   └── ProfileViewModel.swift
+             └── Views
+                 └── ProfileView.swift
+
+
+view --> VM --> Ucase --> Repo --> Repo Imp --> DataSource --> API Service --> Response --> retrun data back until view
+
+// MARK: - MVVM + Clean Architecture API flow
+
+┌──────────────────────┐
+│        VIEW          │
+│   LoginView          │
+└──────────┬───────────┘
+           │
+           │ login()
+           ▼
+┌──────────────────────┐
+│     VIEWMODEL        │
+│   LoginViewModel     │
+└──────────┬───────────┘
+           │
+           │ execute()
+           ▼
+┌──────────────────────┐
+│       USE CASE       │
+│   LoginUseCase       │
+└──────────┬───────────┘
+           │
+           │ login()
+           ▼
+┌──────────────────────┐
+│     REPOSITORY       │
+│     Protocol         │
+└──────────┬───────────┘
+           │
+           │ implemented by
+           ▼
+┌──────────────────────┐
+│   REPOSITORY IMPL    │
+│ LoginRepositoryImpl  │
+└──────────┬───────────┘
+           │
+           │ get data
+           ▼
+┌──────────────────────┐
+│    DATA SOURCE       │
+│ RemoteDataSource     │
+└──────────┬───────────┘
+           │
+           │ request
+           ▼
+┌──────────────────────┐
+│     API SERVICE      │
+│   LoginAPIService    │
+└──────────┬───────────┘
+           │
+           │ HTTP Request
+           ▼
+       ┌─────────┐
+       │ SERVER  │
+       └────┬────┘
+            │
+            │ HTTP Response
+            ▼
+┌──────────────────────┐
+│     API SERVICE      │
+│   Response / DTO     │
+└──────────┬───────────┘
+           │
+           ▼
+┌──────────────────────┐
+│    DATA SOURCE       │
+└──────────┬───────────┘
+           │
+           ▼
+┌──────────────────────┐
+│   REPOSITORY IMPL    │
+│ DTO → Domain Model   │
+└──────────┬───────────┘
+           │
+           ▼
+┌──────────────────────┐
+│     REPOSITORY       │
+└──────────┬───────────┘
+           │
+           ▼
+┌──────────────────────┐
+│       USE CASE       │
+└──────────┬───────────┘
+           │
+           ▼
+┌──────────────────────┐
+│      VIEWMODEL       │
+│ Update UI State      │
+└──────────┬───────────┘
+           │
+           ▼
+┌──────────────────────┐
+│        VIEW          │
+│ Show Success/Error   │
+└──────────────────────┘
+
+
+
+/*
+
+disable log
+OS_ACTIVITY_MODE = disable
+
+/*
+
