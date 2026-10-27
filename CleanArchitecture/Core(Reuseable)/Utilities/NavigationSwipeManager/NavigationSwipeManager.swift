@@ -33,8 +33,6 @@ extension UINavigationController: @retroactive UIGestureRecognizerDelegate {
         return false
     }
 }
-
-
 /*
  
  Handles the navigation controller's swipe-back gesture

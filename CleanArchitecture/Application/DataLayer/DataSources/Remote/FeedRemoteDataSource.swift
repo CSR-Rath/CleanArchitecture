@@ -19,7 +19,7 @@ final class FeedRemoteDataSource: FeedRemoteDataSourceProtocol {
     }
 
     func fetchPosts() async throws -> [FeedItemDTO] {
-        let request = try APIRequestBuilder.makeRequest(path: .posts)
+        let request = try BuildRequest.makeRequest(path: .posts)
         return try await networkClient.request(request)
     }
 }

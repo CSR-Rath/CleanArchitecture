@@ -1,8 +1,8 @@
 //
-//  typealias.swift
+//  Typealias.swift
 //  CleanArchitecture
 //
-//  Created by Sophearath.chhan on 10/8/26.
+//  Created by Sophearath.chhan on 10/27/26.
 //
 
 import Foundation

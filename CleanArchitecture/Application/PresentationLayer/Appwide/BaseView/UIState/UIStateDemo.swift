@@ -40,8 +40,7 @@ struct UIStateDemo: View {
                 // 2. Specialized Flow States
                 // 3. Info Dialog State
                 demoButton(title: ".info (Dialog)", icon: "info.circle.fill", color: .blue) {
-                    uiState = .info(
-                        AppMessage(message: "A new version of the app is ready to install."),
+                    uiState = .info(message: "A new version of the app is ready to install.",
                         leftBtn: ButtonInfo(title: "Later", action: {
                             uiState = .idle
                         }),
@@ -54,12 +53,11 @@ struct UIStateDemo: View {
                 // 4. Failed States (Non-Actionable vs Actionable)
                 HStack(spacing: 10) {
                     demoButton(title: ".failed (Full Screen)", icon: "xmark.octagon.fill", color: .orange) {
-                        uiState = .failed( AppMessage(message: "A new version of the app is ready to install."),)
+                        uiState = .failed(message: "A new version of the app is ready to install.")
                     }
                     
                     demoButton(title: ".failedAction (Modal)", icon: "exclamationmark.arrow.triangle.2.circlepath", color: .red) {
-                        uiState = .failedAction(
-                            error: AppMessage( message: "The destination account is currently unreachable (Code: 503)."),
+                        uiState = .failedAction(message: "The destination account is currently unreachable (Code: 503).",
                             leftBtn: ButtonInfo(title: "Cancel", action: {
                                 uiState = .idle
                             }),

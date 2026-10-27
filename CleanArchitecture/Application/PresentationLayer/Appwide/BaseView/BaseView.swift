@@ -188,10 +188,10 @@ private extension BaseView {
     
     func checkForAlerts(from state: UIState) {
         switch state {
-        case .info(let error, let leftBtn, let rightBtn):
+        case .info(let message, let leftBtn, let rightBtn):
             alertData = AlertData(
                 title: "Notice",
-                message: error.message,
+                message: message,
                 leftBtn: leftBtn == nil ? nil : ButtonInfo(
                     title: leftBtn?.title ?? "",
                     action: {
@@ -208,10 +208,10 @@ private extension BaseView {
                 )
             )
             
-        case .failed(let error):
+        case .failed(let message):
             alertData = AlertData(
                 title: "Error",
-                message: error.message,
+                message: message,
                 leftBtn: nil,
                 rightBtn: ButtonInfo(
                     title: "OK",
@@ -221,10 +221,10 @@ private extension BaseView {
                 )
             )
             
-        case .failedAction(let error, let leftBtn, let rightBtn):
+        case .failedAction(let message, let leftBtn, let rightBtn):
             alertData = AlertData(
                 title: "Action Required",
-                message: error.message,
+                message: message,
                 leftBtn: leftBtn.map { button in
                     ButtonInfo(
                         title: button.title,

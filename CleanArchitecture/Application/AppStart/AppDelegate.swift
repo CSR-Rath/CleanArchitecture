@@ -18,6 +18,9 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
         return true
     }
 
+    
+    // MARK: Connect to SceneDelegate
+    
     func application(
         _ application: UIApplication,
         configurationForConnecting connectingSceneSession: UISceneSession,

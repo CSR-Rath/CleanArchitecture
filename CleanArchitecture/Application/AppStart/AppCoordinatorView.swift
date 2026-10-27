@@ -9,6 +9,7 @@ import SwiftUI
 
 @MainActor
 struct AppCoordinatorView: View {
+    
     @StateObject private var appState = AppState()
     @StateObject private var navigation = NavigationManager()
 
@@ -111,6 +112,8 @@ struct AppCoordinatorView: View {
 
         case .settings:
             DetailView(title: "Settings", navigation: navigation)
+        case .tabBar:
+            TabViewScreen()
         }
     }
 }
@@ -126,8 +129,8 @@ struct DetailView: View {
             Text(title)
                 .font(.largeTitle.bold())
 
-            Button("Push Another Detail") {
-                navigation.push(.detail(id: 2002))
+            Button("Push TabBar") {
+                navigation.push(.tabBar)
             }
             .buttonStyle(.borderedProminent)
 

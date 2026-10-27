@@ -17,17 +17,22 @@ final class SceneDelegate: NSObject, UIWindowSceneDelegate {
         willConnectTo session: UISceneSession,
         options connectionOptions: UIScene.ConnectionOptions
     ) {
-        guard let windowScene = scene as? UIWindowScene else {return}
+        guard let _ = (scene as? UIWindowScene) else { return }
+        
+        print("SceneDelegate: scene(willConnectTo:")
         
         
-        let hostingController = UIHostingController(rootView: AppCoordinatorView())
+//        guard let windowScene = scene as? UIWindowScene else {return}
         
-        let window = AutoTimeoutWindow(windowScene: windowScene)
-        window.rootViewController = hostingController
-        self.window = window
-        window.makeKeyAndVisible()
         
-        SessionTimeoutManager.shared.resetSession()
+//        let hostingController = UIHostingController(rootView: AppCoordinatorView())
+//        
+//        let window = AutoTimeoutWindow(windowScene: windowScene)
+//        window.rootViewController = hostingController
+//        self.window = window
+//        window.makeKeyAndVisible()
+//        
+//        SessionTimeoutManager.shared.resetSession()
         
     }
 }

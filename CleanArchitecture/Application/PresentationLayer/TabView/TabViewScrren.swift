@@ -22,22 +22,17 @@ struct TabViewScreen: View {
     var body: some View {
         
         TabView {
-            NavigationStack {
-                ProfileScreen(viewModel: profileViewModel)
-                    .tabItem {
-                        Label("Profile", systemImage: "person")
-                    }
-                    .tag(0)
-                
-            }
+            ProfileScreen(viewModel: profileViewModel)
+                .tabItem {
+                    Label("Profile", systemImage: "person")
+                }
+                .tag(0)
             
-            NavigationStack {
-                HomeScreen(viewModel: homeViewModel)
-                    .tabItem {
-                        Label("Feed", systemImage: "house")
-                    }
-                    .tag(1)
-            }
+            HomeScreen(viewModel: homeViewModel)
+                .tabItem {
+                    Label("Feed", systemImage: "house")
+                }
+                .tag(1)
         }
     }
 }

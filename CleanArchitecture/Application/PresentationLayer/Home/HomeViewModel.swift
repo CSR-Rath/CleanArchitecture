@@ -33,8 +33,7 @@ final class HomeViewModel: ObservableObject {
             items = try await getFeedUseCase.execute()
             isUIStateView = .idle
         } catch {
-//            isUIStateView = .failedAction(error: <#T##AppMessage#>, leftBtn: <#T##ButtonInfo?#>, rightBtn: <#T##ButtonInfo#>)
-
+            isUIStateView = .failed(error)
         }
     }
 }

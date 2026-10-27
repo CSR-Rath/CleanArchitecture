@@ -30,5 +30,14 @@ final class NavigationManager: ObservableObject {
         guard !path.isEmpty else { return }
         path = NavigationPath()
     }
+
+    func replaceCurrent(with route: AppRoute) {
+        guard !path.isEmpty else {
+            path.append(route)
+            return
+        }
+        path.removeLast()
+        path.append(route)
+    }
 }
 

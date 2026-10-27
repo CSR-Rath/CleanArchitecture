@@ -12,4 +12,5 @@ enum AppRoute: Hashable {
     case profile(userID: String)
     case orders
     case settings
+    case tabBar
 }

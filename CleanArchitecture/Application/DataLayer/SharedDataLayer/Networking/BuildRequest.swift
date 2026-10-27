@@ -2,12 +2,13 @@
 //  APIRequestBuilder.swift
 //  CleanArchitecture
 //
-//  Created by Sophearath.chhan on 9/18/26.
+//  Created by Sophearath.chhan on 10/27/26.
 //
 
 import Foundation
 
-struct APIRequestBuilder {
+struct BuildRequest {
+    
     private static let baseURL = "https://jsonplaceholder.typicode.com"
 
     static func makeRequest(
@@ -16,6 +17,7 @@ struct APIRequestBuilder {
         query: QueryParameters? = nil,
         body: HTTPBody? = nil
     ) throws -> URLRequest {
+        
         guard var components = URLComponents(string: baseURL + path.path) else {
             throw NetworkError.invalidURL
         }
